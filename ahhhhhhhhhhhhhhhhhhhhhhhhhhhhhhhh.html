@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Döner Efsanevi</title>
+<style>
+*{box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#111;overflow:hidden;font-family:Arial,sans-serif}
+svg{width:100vw;height:100vh;display:block}
+.c{cursor:pointer}.c:hover{filter:brightness(1.12)}
+.ov{position:fixed;inset:0;background:radial-gradient(#4b7e98,#16232b);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;z-index:9;text-align:center;padding:16px}
+#shop{display:none;background:#000c}
+.ov h1{font-size:clamp(34px,7vw,70px);margin:0;color:#ffd15b;text-shadow:0 5px #000}
+.ov button{margin:8px;font:bold 22px Arial;padding:12px 28px;border:0;border-radius:14px;background:linear-gradient(#ee9a30,#b04a16);color:#fff;box-shadow:0 5px #5c250d;cursor:pointer}
+.ov button.g{background:linear-gradient(#4cc04c,#23802a);box-shadow:0 5px #124a16}
+.fl{animation:fl 1.1s forwards;font:bold 30px Arial;fill:#ffe14d;stroke:#7a3a00;stroke-width:1.2;pointer-events:none}
+@keyframes fl{to{transform:translateY(-70px);opacity:0}}
+.kn{transform-box:fill-box;transform-origin:90% 90%}.kn.sw{animation:sw .6s}
+@keyframes sw{25%{transform:rotate(-30deg) translate(-10px,20px)}60%{transform:rotate(8deg) translate(-4px,34px)}}
+.glow{animation:gl 1.6s ease-in-out infinite alternate}@keyframes gl{to{opacity:.75}}
+.drop{animation:drop .38s cubic-bezier(.3,1.5,.6,1) both;animation-delay:var(--d,0s)}
+@keyframes drop{from{transform:translateY(-55px) rotate(50deg);opacity:0}}
+.draw{stroke-dasharray:320;stroke-dashoffset:320;animation:dr .9s .1s forwards}@keyframes dr{to{stroke-dashoffset:0}}
+.pop{animation:pop .4s cubic-bezier(.3,1.6,.6,1) both}@keyframes pop{from{transform:scale(.2);opacity:0}}
+.bub{animation:bb 1s linear infinite}.bub:nth-child(2){animation-delay:.3s}.bub:nth-child(3){animation-delay:.6s}@keyframes bb{from{transform:translateY(8px);opacity:.9}to{transform:translateY(-14px);opacity:0}}
+.st{animation:st 1.4s linear infinite}@keyframes st{from{transform:translateY(6px);opacity:.8}to{transform:translateY(-26px);opacity:0}}
+</style></head><body>
+<div class="ov" id="menu"><div style="font-size:70px">🥙</div><h1>DÖNER EFSANEVİ</h1><div style="opacity:.85;margin-top:6px;max-width:600px">Soldaki ustaya tıkla → paket gelir (mayonez + turşu).<br>Patatesi doğra → fritöze at → 10 sn kızart.<br>Lavaşı al, malzemeleri diz, paketle, müşteriye ver.</div><button id="go">🔥 RESTORANI AÇ</button></div>
+<div class="ov" id="shop"><h1 id="shT">GÜN BİTTİ!</h1><div id="shC" style="font-size:26px;margin:10px"></div>
+ <div><button onclick="buy('pat',30)">😌 Sabırlı müşteri — 30🪙</button><button onclick="buy('fry',40)">🍟 Hızlı fritöz — 40🪙</button><button onclick="buy('tip',50)">💰 Bol bahşiş — 50🪙</button></div>
+ <button class="g" onclick="nextDay()">▶ SONRAKİ GÜN</button></div>
+
+<svg id="s" viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet">
+<defs>
+ <pattern id="tile" width="48" height="48" patternUnits="userSpaceOnUse"><rect width="48" height="48" fill="#2a566f"/><rect x="2" y="2" width="44" height="44" rx="3" fill="#3a6f8f"/><rect x="2" y="2" width="44" height="14" rx="3" fill="#ffffff14"/></pattern>
+ <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4d6d8"/><stop offset="1" stop-color="#9a9da1"/></linearGradient>
+ <pattern id="brush" width="60" height="6" patternUnits="userSpaceOnUse"><path d="M0 2h40M20 5h40" stroke="#fff" stroke-opacity=".18" stroke-width="1"/></pattern>
+ <pattern id="chk" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#d62828"/><rect width="4" height="4" fill="#fff"/><rect x="4" y="4" width="4" height="4" fill="#fff"/></pattern>
+ <linearGradient id="tray" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6c7074"/><stop offset="1" stop-color="#b5b8bb"/></linearGradient>
+ <linearGradient id="meatg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a3d16"/><stop offset=".35" stop-color="#d89048"/><stop offset=".7" stop-color="#b3662a"/><stop offset="1" stop-color="#6a3212"/></linearGradient>
+ <linearGradient id="heat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc23a"/><stop offset="1" stop-color="#ff5a14"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd24a"/><stop offset="1" stop-color="#e08a00"/></linearGradient>
+ <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9783f"/><stop offset="1" stop-color="#8a5226"/></linearGradient>
+ <linearGradient id="blk" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#111"/><stop offset=".5" stop-color="#3a3d42"/><stop offset="1" stop-color="#16181b"/></linearGradient>
+</defs>
+<rect width="960" height="540" fill="url(#tile)"/>
+<g id="stone"></g>
+<path d="M610 60l30-4 12 22-30 6zM716 236l34-6 6 18-30 8z" fill="#5a3d28" opacity=".85"/>
+<text id="req" x="560" y="86" style="font:bold 34px Arial;fill:#fff;stroke:#0a2231;stroke-width:1" opacity="0">Bir Döner Sandviç</text>
+<g id="custG"></g>
+<rect x="0" y="298" width="960" height="30" fill="#dcbd8e"/><rect x="0" y="298" width="960" height="7" fill="#f0d9b0"/><rect x="0" y="324" width="960" height="8" fill="#5c4a35"/>
+<rect x="0" y="332" width="960" height="170" fill="url(#metal)"/><rect x="0" y="332" width="960" height="170" fill="url(#brush)"/>
+<rect x="0" y="502" width="960" height="38" fill="url(#wood)"/><path d="M0 502h960M0 520h960M120 502v18M340 520v20M560 502v18M780 520v20" stroke="#5a3418" stroke-width="2.5"/><rect x="0" y="498" width="960" height="6" fill="#6b6e72"/>
+
+<!-- içecek makinesi (siyah, iki musluk) -->
+<g transform="translate(696,212)">
+ <rect x="0" y="0" width="104" height="124" rx="6" fill="url(#blk)" stroke="#000" stroke-width="3"/>
+ <rect x="6" y="6" width="92" height="42" rx="4" fill="#fff"/><rect x="6" y="6" width="46" height="42" rx="4" fill="#d81f26"/><rect x="52" y="6" width="46" height="42" rx="4" fill="#f7861e"/>
+ <text x="29" y="33" text-anchor="middle" style="font:bold 15px Arial;fill:#fff">COLA</text><text x="75" y="33" text-anchor="middle" style="font:bold 15px Arial;fill:#fff">FANTA</text>
+ <rect x="12" y="54" width="34" height="34" rx="5" fill="#0a0a0a" stroke="#555" stroke-width="2"/><rect x="58" y="54" width="34" height="34" rx="5" fill="#0a0a0a" stroke="#555" stroke-width="2"/>
+ <circle cx="29" cy="68" r="8" fill="#d81f26"/><circle cx="75" cy="68" r="8" fill="#f7861e"/>
+ <path d="M29 90v16q0 6 5 6M75 90v16q0 6 5 6" stroke="#d8dce0" stroke-width="5" fill="none" stroke-linecap="round"/>
+ <rect x="-4" y="118" width="112" height="8" fill="#b8bcc0" stroke="#555" stroke-width="2"/>
+</g>
+
+<g class="c" onclick="cutMeat()">
+ <rect x="205" y="72" width="40" height="255" rx="4" fill="#8f959a" stroke="#34383b" stroke-width="3"/>
+ <rect class="glow" x="212" y="100" width="26" height="80" fill="url(#heat)"/><rect class="glow" x="212" y="215" width="26" height="80" fill="url(#heat)"/>
+ <rect x="135" y="40" width="10" height="290" fill="#b8bcc0" stroke="#4a4d50" stroke-width="2"/>
+ <g id="mtex"></g><rect x="125" y="318" width="40" height="12" fill="#9a9ea2" stroke="#34383b" stroke-width="2"/>
+</g>
+<!-- usta: tıkla -> paket -->
+<g class="c" onclick="callMaster()" transform="translate(14,150)">
+ <path d="M0 90 Q10 60 50 62 L100 70 L110 140 L20 150Z" fill="#a82a2a" stroke="#4a1010" stroke-width="3"/>
+ <path d="M36 70 L50 130 L68 70Z" fill="#f3f0e8" stroke="#4a3a2a" stroke-width="2"/>
+ <g class="kn" id="knife"><path d="M92 40 L110 54 L58 138 L46 128Z" fill="#dfe3e6" stroke="#444" stroke-width="2.5"/><path d="M46 128l-12 14" stroke="#6b3a1a" stroke-width="8" stroke-linecap="round"/></g>
+ <path d="M80 70 L120 50 L132 62 L98 92Z" fill="#f2d2b0" stroke="#5a3a28" stroke-width="2.5"/>
+ <ellipse cx="42" cy="38" rx="32" ry="34" fill="#f1c6a0" stroke="#5a3a28" stroke-width="3"/>
+ <path d="M16 0 h52 l-6 -20 h-40z" fill="#c42222" stroke="#5a1010" stroke-width="3"/><path d="M42 -20 q-5 10 -2 22" stroke="#e8e8e8" stroke-width="3" fill="none"/>
+ <ellipse cx="68" cy="46" rx="16" ry="13" fill="#e87878" stroke="#5a3a28" stroke-width="2.5"/>
+ <circle cx="32" cy="28" r="8" fill="#fff" stroke="#222" stroke-width="2"/><circle cx="52" cy="26" r="8" fill="#fff" stroke="#222" stroke-width="2"/><circle cx="35" cy="29" r="3" fill="#111"/><circle cx="55" cy="27" r="3" fill="#111"/>
+ <path d="M18 54 Q42 44 66 52 Q56 70 42 62 Q28 70 18 54Z" fill="#c9c9c9" stroke="#5a5a5a" stroke-width="2.5"/>
+</g>
+<g transform="translate(112,274)"><g id="boxG"></g></g>
+
+<g id="trays"></g>
+<g class="c" onclick="add('ketchup')" transform="translate(170,452)" id="ketG"></g>
+<g class="c" onclick="takeLavas()"><g id="stack"></g></g>
+<g class="c" onclick="wrapIt()" transform="translate(385,455) scale(.8)">
+ <path d="M-60 -10 L10 -40 L50 -8 L50 40 L-20 55 L-60 28Z" fill="#8b5a30" stroke="#3a2210" stroke-width="3"/><path d="M-60 -10 L-20 12 L50 -8M-20 12V55" stroke="#3a2210" stroke-width="3" fill="none"/><path d="M-60 -10L-20 12 50 -8 10 -40Z" fill="#a8743f"/>
+ <g transform="rotate(-8 60 -20)"><rect x="38" y="-48" width="44" height="40" rx="3" fill="#fff" stroke="#555" stroke-width="2"/><rect x="42" y="-44" width="36" height="12" fill="#e5383b"/><path d="M42 -26h36M42 -18h36" stroke="#2a5fc4" stroke-width="3"/></g>
+</g>
+<g id="plate" class="c" onclick="clearPlate()" transform="translate(545,462) scale(.82)"></g>
+<g id="dslot" class="c" onclick="clearDrink()"></g>
+<g class="c" onclick="pickDrink('cola')" id="stC"></g><g class="c" onclick="pickDrink('fanta')" id="stF"></g>
+<g id="dfill"></g>
+
+<!-- fritöz -->
+<g id="fryer" class="c" onclick="fryClick()" transform="translate(836,292)">
+ <rect x="2" y="46" width="108" height="66" rx="10" fill="#2a7d7b" stroke="#12403f" stroke-width="3.5"/>
+ <rect x="8" y="12" width="96" height="50" rx="6" fill="#dfe3e6" fill-opacity=".35" stroke="#23282c" stroke-width="3"/>
+ <g id="fFries"></g>
+ <path d="M20 14v46M36 14v46M52 14v46M68 14v46M84 14v46M10 28h92M10 44h92" stroke="#222" stroke-width="1.6" opacity=".6"/>
+ <g id="fBub" opacity="0"><circle class="bub" cx="30" cy="40" r="4" fill="#fff"/><circle class="bub" cx="58" cy="44" r="5" fill="#fff"/><circle class="bub" cx="84" cy="38" r="4" fill="#fff"/></g>
+ <g id="fSt" opacity="0"><circle class="st" cx="40" cy="8" r="9" fill="#fff"/><circle class="st" cx="70" cy="4" r="7" fill="#fff"/></g>
+ <circle cx="16" cy="64" r="4.5" fill="#d33"/><circle cx="16" cy="76" r="4.5" fill="#e8c020"/><circle cx="16" cy="88" r="4.5" fill="#3b3"/>
+ <rect x="30" y="66" width="38" height="32" rx="4" fill="#111"/><text id="fDisp" x="49" y="91" text-anchor="middle" style="font:bold 26px monospace;fill:#ff3030">-</text>
+ <circle cx="88" cy="82" r="13" fill="#1f2a2a" stroke="#0a1010" stroke-width="2"/><circle cx="88" cy="82" r="5" fill="#8a9a9a"/>
+</g>
+<!-- patates yığını + doğrama tahtası -->
+<g class="c" onclick="potatoClick()" id="pot" transform="translate(826,466)"></g>
+<g class="c" onclick="boardClick()" id="board" transform="translate(902,462)"></g>
+<g id="fx2"></g><g id="fx"></g>
+
+<g transform="translate(790,30)"><rect x="-45" y="-18" width="110" height="36" rx="18" fill="#d9d9d9" stroke="#777" stroke-width="3"/><text id="coinT" x="-12" y="9" text-anchor="middle" style="font:bold 24px Arial;fill:#333">0</text>
+ <circle cx="50" cy="0" r="26" fill="url(#gold)" stroke="#8a5a00" stroke-width="3"/><circle cx="50" cy="0" r="17" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="3"/>
+ <g class="c" onclick="togglePause()" transform="translate(112,0)"><circle r="22" fill="#cfcfcf" stroke="#777" stroke-width="3"/><path id="pz" d="M-7 -9v18M7 -9v18" stroke="#fff" stroke-width="6" stroke-linecap="round"/></g></g>
+<text id="lv" x="16" y="30" style="font:bold 22px Arial;fill:#fff;stroke:#0a2231;stroke-width:.8">Gün 1</text>
+<text id="hint" x="480" y="528" text-anchor="middle" style="font:bold 20px Arial;fill:#fff;stroke:#222;stroke-width:.8"></text>
+<g id="pauseG" style="display:none"><rect width="960" height="540" fill="#000a"/><text x="480" y="280" text-anchor="middle" style="font:bold 60px Arial;fill:#ffd15b">DURAKLATILDI</text></g>
+</svg>
+
+<script>
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+let seed=11;const R=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const S={coins:0,day:1,dayServed:0,goal:5,plate:null,drink:null,dbusy:false,meat:6,fries:4,mayo:4,pickle:4,box:null,cut:{st:'none'},fry:{st:'idle',t:0,b:0},cust:null,wait:1,pause:false,on:false,slow:1,fryT:10,tip:1};
+function beep(f,d){try{const a=window.A||(window.A=new AudioContext()),o=a.createOscillator(),g=a.createGain();o.frequency.value=f;g.gain.value=.07;g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+d)}catch(e){}}
+function hint(t){$('hint').textContent=t;clearTimeout(hint.t);hint.t=setTimeout(()=>$('hint').textContent='',1700)}
+function fx(t,x,y,col){const e=document.createElementNS(NS,'text');e.setAttribute('class','fl');e.setAttribute('x',x);e.setAttribute('y',y);if(col)e.style.fill=col;e.textContent=t;$('fx').appendChild(e);setTimeout(()=>e.remove(),1100)}
+const HAND=`<g transform="translate(16,12)"><ellipse rx="12" ry="9" fill="#fff" stroke="#333" stroke-width="2.5"/><path d="M-7 -7q-1 -9 3 -9t3 9M1 -7q0 -9 4 -8t2 8" stroke="#333" stroke-width="2" fill="#fff"/></g>`;
+function fly(gfx,x0,y0,x1,y1,ms,cb){const g=document.createElementNS(NS,'g');g.innerHTML=gfx+HAND;$('fx2').appendChild(g);
+ const a=g.animate([{transform:`translate(${x0}px,${y0}px)`},{transform:`translate(${(x0+x1)/2}px,${Math.min(y0,y1)-55}px)`},{transform:`translate(${x1}px,${y1}px)`}],{duration:ms,easing:'ease-in-out',fill:'forwards'});a.onfinish=()=>{g.remove();cb&&cb()}}
+
+/* ---------- çizimler ---------- */
+function slices(cx,cy,n,sp,drop){let s='';for(let i=0;i<n;i++){const x=cx+(R()-.5)*sp,y=cy+(R()-.5)*sp*.4,d=`<circle r="${9+R()*3}" fill="#a9c53f" stroke="#4d6a1a" stroke-width="2"/><circle r="5.5" fill="#d3e57a"/><circle cx="-1.5" r="1.2" fill="#8aa030"/><circle cx="2" cy="1.5" r="1.2" fill="#8aa030"/>`;
+ s+=`<g transform="translate(${x},${y})">${drop?`<g class="drop" style="--d:${i*.07}s">${d}</g>`:d}</g>`}return s}
+function mix(a,b,p){const h=s=>[1,3,5].map(i=>parseInt(s.substr(i,2),16)),A=h(a),B=h(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*p).toString(16).padStart(2,'0')).join('')}
+function fries(cx,cy,n,sp,p,drop){p=p===undefined?1:p;let s='';for(let i=0;i<n;i++){const x=cx+(R()-.5)*sp,y=cy+(R()-.5)*sp*.4,len=22+R()*14,v=R()*.25,col=mix(mix('#f1e4ae','#f7bd2c',p),'#d98c1a',Math.max(0,p-.8)*2.5+v*p),d=`<rect width="5.5" height="${len}" rx="2" fill="${col}" stroke="${mix('#b8a66c','#a8741a',p)}" stroke-width="1"/>`;
+ s+=`<g transform="translate(${x},${y}) rotate(${R()*180})">${drop?`<g class="drop" style="--d:${i*.04}s">${d}</g>`:d}</g>`}return s}
+function meatBits(cx,cy,n,sp,drop){let s='';for(let i=0;i<n;i++){const x=cx+(R()-.5)*sp,y=cy+(R()-.5)*sp*.35,r=R()*360,f=R()<.5,d=`<path d="${f?'M-13 1q3-9 11-7q9-3 15 4q1 8-8 8q-9 4-18-5z':'M-12 -1q6-8 14-5q9 1 11 8q-4 7-12 5q-10 1-13-8z'}" fill="#bd7a34" stroke="#5e300f" stroke-width="1.8" stroke-linejoin="round"/><path d="M-8 -1q6-5 13-1" stroke="#ecc080" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M-4 3q5 2 10 0" stroke="#7a3d14" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;s+=`<g transform="translate(${x},${y}) rotate(${r})">${drop?`<g class="drop" style="--d:${i*.05}s">${d}</g>`:d}</g>`}return s}
+function mayoBottle(){return `<path d="M-16 -4Q-18 -30 -9 -46Q0 -52 9 -46Q18 -30 16 -4Q16 22 12 30H-12Q-16 22 -16 -4Z" fill="#f3eecb" stroke="#8a8466" stroke-width="2.5"/><path d="M-15 -26L0 -34L15 -26L15 6Q0 14 -15 6Z" fill="#1f3f8f" stroke="#10285f" stroke-width="2"/><ellipse cx="0" cy="-6" rx="9" ry="4" fill="#f7f3d8"/><text y="-17" text-anchor="middle" style="font:bold 6px Arial;fill:#fff">MAYONEZ</text><rect x="-10" y="30" width="20" height="8" rx="2" fill="#fff" stroke="#999" stroke-width="2"/>`}
+function ketBottle(){return `<path d="M-16 -4Q-18 -30 -9 -46Q0 -52 9 -46Q18 -30 16 -4Q16 22 12 30H-12Q-16 22 -16 -4Z" fill="#a8182a" stroke="#4a0a12" stroke-width="2.5"/><path d="M-15 -26L0 -34L15 -26L15 6Q0 14 -15 6Z" fill="#fff" stroke="#c4c4c4" stroke-width="2"/><rect x="-15" y="-20" width="30" height="9" fill="#c2185b"/><text y="-13" text-anchor="middle" style="font:bold 6px Arial;fill:#fff">KETÇAP</text><circle cy="2" r="5" fill="#d62828"/><rect x="-10" y="30" width="20" height="8" rx="2" fill="#fff" stroke="#999" stroke-width="2"/>`}
+function jar(){return `<rect x="-20" y="-34" width="40" height="64" rx="8" fill="#cfe8d8" fill-opacity=".55" stroke="#5f7f6a" stroke-width="2.5"/><rect x="-22" y="-42" width="44" height="12" rx="3" fill="url(#chk)" stroke="#7a1414" stroke-width="2"/>`+[[-8,-18,25],[6,-8,-15],[-6,6,10],[8,14,-25],[-9,20,20]].map(a=>`<g transform="translate(${a[0]},${a[1]}) rotate(${a[2]+90})"><rect x="-14" y="-5" width="28" height="10" rx="5" fill="#7f9a2a" stroke="#3f5a12" stroke-width="2"/><circle cx="-4" r="1.2" fill="#c5d880"/><circle cx="4" cy="2" r="1.2" fill="#c5d880"/></g>`).join('')}
+function cupG(k,x,y,sc){const c=k==='cola'?'#d81f26':'#f7861e',t=k==='cola'?'COLA':'FANTA';return `<g transform="translate(${x},${y}) scale(${sc})"><path d="M-16 -22L16 -22L12 28L-12 28Z" fill="${c}" stroke="#4a1010" stroke-width="2.5"/><path d="M-14.5 -4Q0 6 14.5 -4L13 10Q0 20 -13 10Z" fill="#fff" opacity=".92"/><text y="8" text-anchor="middle" style="font:bold 7px Arial;fill:${c}">${t}</text><rect x="-18" y="-28" width="36" height="7" rx="3" fill="#f4f4f4" stroke="#555" stroke-width="2"/><path d="M5 -28L10 -46" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><path d="M5 -28L10 -46" stroke="#e33" stroke-width="1.2"/></g>`}
+function lavas(){return `<ellipse rx="92" ry="44" fill="#f0d095" stroke="#7a4a1c" stroke-width="4"/>`+[0,1,2,3,4,5,6,7].map(i=>`<circle cx="${-60+i*17}" cy="${(i%3-1)*14}" r="${3+i%3}" fill="#c98a3c" opacity=".7"/>`).join('')}
+const TR=[{k:'meat',x:235},{k:'pickle',x:355},{k:'mayo',x:475},{k:'fries',x:595}];
+function build(){
+ seed=3;let st='';for(let r=0;r<10;r++){let x=-30+(r%2)*40;while(x<150+R()*60+(r%3)*10){const w=60+R()*50;st+=`<rect x="${x}" y="${r*56-8}" width="${w}" height="50" rx="14" fill="hsl(40,4%,${58+R()*16}%)" stroke="#555" stroke-width="3"/>`;x+=w+4}}
+ $('stone').innerHTML=st;
+ $('mtex').innerHTML=cone();
+ $('trays').innerHTML=TR.map(o=>`<g class="c" onclick="add('${o.k}')"><rect x="${o.x}" y="342" width="112" height="68" rx="8" fill="url(#tray)" stroke="#3a3d40" stroke-width="3"/><rect x="${o.x+7}" y="349" width="98" height="54" rx="4" fill="#5d6165" opacity=".6"/><g id="t_${o.k}"></g></g>`).join('');
+ $('ketG').innerHTML=ketBottle();
+ let sk='';for(let i=0;i<4;i++)sk+=`<ellipse cx="275" cy="${470-i*7}" rx="44" ry="18" fill="#e9c27c" stroke="#7a4a1c" stroke-width="3"/>`;$('stack').innerHTML=sk+`<g fill="#b9772f">`+[0,1,2,3,4].map(i=>`<circle cx="${257+i*10}" cy="${446+(i%2)*5}" r="3"/>`).join('')+'</g>';
+ $('stC').innerHTML=[0,1,2].map(i=>cupG('cola',722,470-i*5,1)).join('');$('stF').innerHTML=[0,1,2].map(i=>cupG('fanta',770,470-i*5,1)).join('');
+ $('pot').innerHTML=[[-14,4],[14,2],[0,-12]].map(a=>`<g transform="translate(${a[0]},${a[1]}) rotate(${a[0]*2})"><ellipse rx="19" ry="13" fill="#caa066" stroke="#6b4a1c" stroke-width="2.5"/><circle cx="-6" cy="-3" r="1.6" fill="#8a6a3a"/><circle cx="6" cy="3" r="1.6" fill="#8a6a3a"/></g>`).join('');
+ drawTrays();drawFry();drawDrink();drawBoard();drawBox();
+}
+function drawTrays(){
+ seed=99;$('t_meat').innerHTML=meatBits(291,376,Math.min(24,S.meat*2),86);
+ seed=55;$('t_pickle').innerHTML=slices(411,376,Math.min(18,S.pickle*3),76);
+ const w=Math.min(46,S.mayo*8);$('t_mayo').innerHTML=S.mayo?`<path d="M${531-w} 378Q${531-w*.6} 362 ${531-w*.2} 372Q${531+w*.2} 358 ${531+w*.6} 372Q${531+w} 368 ${531+w} 384Q531 394 ${531-w} 378Z" fill="#fbf8e6" stroke="#cfc9a8" stroke-width="2"/>`:'';
+ seed=77;$('t_fries').innerHTML=fries(651,358,Math.min(36,S.fries*4),76);
+}
+function drawFry(){const f=S.fry,p=f.st==='idle'?0:f.st==='cook'?1-f.t/S.fryT:1;seed=8;
+ $('fFries').innerHTML=f.st==='idle'?'':f.st==='burn'?`<ellipse cx="56" cy="36" rx="40" ry="14" fill="#2a1a10"/>`+fries(56,26,10,60,1.6):fries(56,26,24,66,p);
+ $('fBub').setAttribute('opacity',f.st==='cook'?1:0);$('fSt').setAttribute('opacity',f.st==='cook'||f.st==='done'?.8:0);
+ $('fDisp').textContent=f.st==='cook'?Math.ceil(f.t):f.st==='done'?'OK':f.st==='burn'?'X':'-'}
+function drawDrink(){$('dslot').innerHTML=S.drink?cupG(S.drink,668,462,1.25):''}
+function drawBox(){const g=$('boxG'),b=S.box;if(!b){g.innerHTML='';return}
+ g.innerHTML=`<path d="M-62 -4L-30 -22L62 -6L62 38L-30 54L-62 34Z" fill="#8b5a30" stroke="#3a2210" stroke-width="3"/>`+
+ (b.mayo?`<g class="c" onclick="useMayo()" transform="translate(-14,-14) scale(1.15)">${mayoBottle()}</g>`:'')+(b.jar?`<g class="c" onclick="usePickle()" transform="translate(32,-4)">${jar()}</g>`:'')+
+ `<path d="M-62 -4L-30 14L-30 54M-30 14L62 -6" stroke="#3a2210" stroke-width="3" fill="none"/><path d="M-62 -4L-30 14L-30 54L-62 34Z" fill="#a8743f" stroke="#3a2210" stroke-width="3"/><rect x="-54" y="14" width="18" height="10" rx="5" fill="#00000030"/>`}
+function drawBoard(){const c=S.cut.st,g=$('board');
+ g.innerHTML=`<rect x="-46" y="-6" width="92" height="34" rx="6" fill="#b98550" stroke="#5a3418" stroke-width="3"/><path d="M-36 6h60M-30 18h66" stroke="#8a5a2a" stroke-width="2"/>`+
+ (c==='cutting'?`<g transform="translate(-14,8)"><ellipse rx="17" ry="11" fill="#caa066" stroke="#6b4a1c" stroke-width="2"/></g><g transform="translate(18,8)"><ellipse rx="15" ry="10" fill="#caa066" stroke="#6b4a1c" stroke-width="2"/></g><g transform="translate(10,-34)"><g class="kn" id="bkn"><path d="M0 0L30 0L30 8L0 8Z" fill="#dfe3e6" stroke="#444" stroke-width="2"/><rect x="28" y="-2" width="22" height="12" rx="3" fill="#6b3a1a"/></g></g>`:'')+
+ (c==='ready'?(seed=21,fries(0,6,12,70,0)):'')}
+const FLY={meat:()=>(seed=2,meatBits(0,0,3,24)),pickle:()=>(seed=3,slices(0,0,3,24)),mayo:()=>`<ellipse rx="18" ry="10" fill="#fbf8e6" stroke="#cfc9a8" stroke-width="2.5"/>`,ketchup:()=>`<ellipse rx="18" ry="10" fill="#d62828" stroke="#7a1010" stroke-width="2.5"/>`,fries:()=>(seed=4,fries(0,0,5,20,1))};
+const SRC={meat:[291,376],pickle:[411,376],mayo:[531,376],fries:[651,376],ketchup:[170,430]};
+const LAY={
+ meat:()=>(seed=6,meatBits(0,-2,12,110,1)),pickle:()=>(seed=7,slices(0,-12,7,116,1)),fries:()=>(seed=9,fries(0,-8,16,104,1,1)),
+ mayo:()=>{const d='M-74 10q18-16 37 0t37 0t37 0t37 0';return `<path class="draw" d="${d}" stroke="#cfcab0" stroke-width="17" fill="none" stroke-linecap="round"/><path class="draw" d="${d}" stroke="#fbf8e6" stroke-width="12" fill="none" stroke-linecap="round"/>`},
+ ketchup:()=>{const d='M-70 -16l20 26l20-26l20 26l20-26l20 26l20-26';return `<path class="draw" d="${d}" stroke="#7a1010" stroke-width="10" fill="none" stroke-linejoin="round" stroke-linecap="round"/><path class="draw" d="${d}" stroke="#d62828" stroke-width="6" fill="none" stroke-linejoin="round" stroke-linecap="round"/>`}};
+function cone(){seed=41;const W=y=>54-(y-62)*.06+3*Math.sin(y/9);let L=[],Rr=[];for(let y=62;y<=322;y+=8){L.push((145-W(y)).toFixed(1)+' '+y);Rr.unshift((145+W(y)).toFixed(1)+' '+y)}
+ let o=`<path d="M${L.join(' L')} L${Rr.join(' L')}Z" fill="url(#meatg)" stroke="#4a210b" stroke-width="4" stroke-linejoin="round"/>`;
+ const cols=['#e8a85c','#b8662a','#f3c887','#7a3a14','#d88c44','#5e2c0e'];
+ for(let i=0;i<190;i++){const y=66+R()*252,x=145+(R()-.5)*(W(y)*2-10),c=cols[(R()*6)|0],l=10+R()*16;o+=`<path d="M${x} ${y}q${l*.4} ${-5-R()*5} ${l} ${R()*4-2}" stroke="${c}" stroke-width="${2.5+R()*3}" fill="none" stroke-linecap="round" opacity=".85"/>`}
+ for(let y=88;y<320;y+=26){let d='M'+(145-W(y)+2)+' '+y;for(let x=-W(y)+8;x<W(y);x+=14)d+='q7 '+(R()*6-1)+' 14 0';o+=`<path d="${d}" stroke="#4a210b" stroke-width="2" fill="none" opacity=".5"/>`}
+ o+=`<path d="M${145-W(62)} 64Q145 40 ${145+W(62)} 64Q145 80 ${145-W(62)} 64Z" fill="#9a5424" stroke="#4a210b" stroke-width="3"/><ellipse cx="120" cy="150" rx="7" ry="22" fill="#fff" opacity=".13"/>`;
+ for(let k=0;k<4;k++)o+=`<ellipse cx="${112+R()*70}" cy="${312+R()*8}" rx="${4+R()*4}" ry="${6+R()*5}" fill="#f6dfae" stroke="#b78a4a" stroke-width="1.5"/>`;return o}
+function cust(v){
+ const sk=['#e8b48a','#f0c7a0','#e2b08a'][v];let h='';
+ if(v===0)h=`<path d="M-50 -32Q-45 -78 0 -78Q45 -78 50 -32Q0 -44 -50 -32Z" fill="#2d5fc4" stroke="#17306a" stroke-width="3"/><circle cy="-80" r="7" fill="#2d5fc4" stroke="#17306a" stroke-width="3"/>`;
+ if(v===1)for(let i=0;i<16;i++){const a=i/16*Math.PI*1.1+Math.PI*1.05;h+=`<circle cx="${Math.cos(a)*46}" cy="${Math.sin(a)*46-14}" r="14" fill="#f06a1e" stroke="#9a3a08" stroke-width="2"/>`}
+ const body=['#7b8895','#7a3f98','#a3d58a'][v];
+ return `<path d="M-72 160 Q-70 40 0 40 Q70 40 72 160Z" fill="${body}" stroke="#222" stroke-width="3"/><path d="M-14 40h28v22l-14 10-14-10z" fill="${v===0?'#2a5fa0':'#e8e8e8'}" stroke="#222" stroke-width="2"/>
+ <ellipse rx="44" ry="52" fill="${sk}" stroke="#4a2c18" stroke-width="3.5"/>${h}
+ <ellipse cx="-47" cy="4" rx="9" ry="16" fill="${sk}" stroke="#4a2c18" stroke-width="3"/><ellipse cx="47" cy="4" rx="9" ry="16" fill="${sk}" stroke="#4a2c18" stroke-width="3"/>
+ <circle cx="-17" cy="-10" r="12" fill="#fff" stroke="#222" stroke-width="2.5"/><circle cx="17" cy="-10" r="12" fill="#fff" stroke="#222" stroke-width="2.5"/><circle cx="-14" cy="-8" r="4.5" fill="#111"/><circle cx="20" cy="-8" r="4.5" fill="#111"/>
+ <path d="M-4 -2Q8 18 -2 22" stroke="#4a2c18" stroke-width="3" fill="none"/><path d="M-18 30Q0 44 18 30" stroke="#6b1f1f" stroke-width="4" fill="none" stroke-linecap="round"/>${v===2?'<path d="M-26 20Q0 10 26 20Q14 30 0 26Q-14 30 -26 20Z" fill="#2a1a10"/>':''}`;
+}
+const IC={meat:(x,y)=>(seed=3,meatBits(x,y,1,0)),pickle:(x,y)=>`<circle cx="${x}" cy="${y}" r="10" fill="#a9c53f" stroke="#4d6a1a" stroke-width="2"/><circle cx="${x}" cy="${y}" r="5.5" fill="#d3e57a"/>`,mayo:(x,y)=>`<ellipse cx="${x}" cy="${y}" rx="14" ry="8" fill="#fbf8e6" stroke="#bbb" stroke-width="2"/>`,ketchup:(x,y)=>`<ellipse cx="${x}" cy="${y}" rx="14" ry="8" fill="#d62828" stroke="#7a1010" stroke-width="2"/>`,fries:(x,y)=>`<rect x="${x-3}" y="${y-13}" width="6" height="26" rx="2" fill="#f7cd45" stroke="#a97a14" transform="rotate(30 ${x} ${y})"/><rect x="${x+4}" y="${y-13}" width="6" height="26" rx="2" fill="#e9b52c" stroke="#a97a14" transform="rotate(-20 ${x} ${y})"/>`,cola:(x,y)=>cupG('cola',x,y,.7),fanta:(x,y)=>cupG('fanta',x,y,.7)};
+function drawCust(){
+ const c=S.cust,g=$('custG');if(!c){g.innerHTML='';return}
+ let b='';c.need.forEach((k,i)=>{b+=IC[k](30+(i%2)*50,34+Math.floor(i/2)*36)});
+ const hs=.5+c.pat/200;
+ g.innerHTML=`<g class="c" onclick="serve()"><g transform="translate(${c.x},175)">${cust(c.v)}</g>
+ <g transform="translate(${c.x+68},90)"><rect width="110" height="125" rx="20" fill="#fff" fill-opacity=".28" stroke="#fff" stroke-opacity=".7" stroke-width="3"/>${b}</g>
+ <g transform="translate(${c.x-100},235) scale(${hs})"><path d="M0 22C-30 0 -22 -26 -5 -22 0 -20 0 -14 0 -14 0 -14 0 -20 5 -22 22 -26 30 0 0 22Z" transform="scale(1.7)" fill="#e5252a" stroke="#6b0f12" stroke-width="3"/></g></g>`;
+}
+
+/* ---------- oyun ---------- */
+function ok(){return S.on&&!S.pause}
+function takeLavas(){if(!ok())return;if(S.plate){hint('Önce elindekini bitir');return}S.plate={items:[],wrapped:false,busy:0};beep(420,.08);
+ fly(`<ellipse rx="40" ry="16" fill="#f0d095" stroke="#7a4a1c" stroke-width="3"/>`,275,455,545,462,450,()=>{if(S.plate)$('plate').innerHTML=`<g class="pop">${lavas()}</g>`})}
+function add(k){if(!ok())return;const p=S.plate;if(!p){hint('Önce lavaşı al');return}if(p.wrapped||p.items.includes(k))return;
+ if(k==='meat'){if(S.meat<=0){hint('Et bitti! Döner şişine tıkla');return}S.meat=Math.max(0,S.meat-3)}
+ if(k==='pickle'){if(S.pickle<=0){hint('Turşu bitti! Ustaya tıkla');return}S.pickle--}
+ if(k==='mayo'){if(S.mayo<=0){hint('Mayonez bitti! Ustaya tıkla');return}S.mayo--}
+ if(k==='fries'){if(S.fries<=0){hint('Patates yok! Patatesi kızart');return}S.fries--}
+ p.items.push(k);p.busy++;drawTrays();beep(520,.06);
+ const s=SRC[k];fly(FLY[k](),s[0],s[1],545,445,520,()=>{p.busy--;if(S.plate===p&&!p.wrapped){$('plate').insertAdjacentHTML('beforeend',`<g>${LAY[k]()}</g>`);beep(380,.08)}})}
+function cutMeat(){if(!ok())return;const k=$('knife');k.classList.remove('sw');void k.getBoundingClientRect();k.classList.add('sw');setTimeout(()=>{S.meat=Math.min(14,S.meat+7);drawTrays();beep(300,.1)},350)}
+function callMaster(){if(!ok())return;if(S.box){hint('Paket zaten tezgahta');return}S.box={mayo:true,jar:true};drawBox();beep(350,.15);
+ $('boxG').animate([{transform:'translate(-40px,-30px) scale(.15)',opacity:0},{transform:'translate(0,6px) scale(1.12)',opacity:1,offset:.7},{transform:'translate(0,0) scale(1)',opacity:1}],{duration:550,easing:'ease-out'});hint('📦 Usta paketi uzattı: mayonez + turşu')}
+function boxDone(){if(S.box&&!S.box.mayo&&!S.box.jar){setTimeout(()=>{S.box=null;drawBox()},500)}}
+function useMayo(){if(!ok()||!S.box||!S.box.mayo)return;S.box.mayo=false;drawBox();
+ fly(`<g transform="scale(1.1)">${mayoBottle()}</g>`,98,262,531,330,600,()=>{beep(240,.5);fx('+6 mayonez',500,350,'#fff');S.mayo=Math.min(8,S.mayo+6);drawTrays();boxDone()})}
+function usePickle(){if(!ok()||!S.box||!S.box.jar)return;S.box.jar=false;drawBox();
+ fly(jar(),144,268,411,330,600,()=>{const k=document.createElementNS(NS,'g');k.setAttribute('transform','translate(380,330)');k.innerHTML=`<g class="kn" id="pkn"><path d="M0 0L34 0L34 8L0 8Z" fill="#dfe3e6" stroke="#444" stroke-width="2"/><rect x="32" y="-2" width="22" height="12" rx="3" fill="#6b3a1a"/></g>`;$('fx2').appendChild(k);
+  k.firstChild.animate([{transform:'rotate(-25deg)'},{transform:'rotate(14deg)'}],{duration:200,iterations:5,direction:'alternate'}).onfinish=()=>{k.remove();beep(500,.1);fx('+6 dilimli turşu',430,350,'#b8e060');S.pickle=Math.min(8,S.pickle+6);drawTrays();boxDone()}})}
+function potatoClick(){if(!ok())return;if(S.cut.st!=='none'){hint('Tahtada patates var');return}S.cut.st='moving';
+ fly(`<ellipse rx="18" ry="12" fill="#caa066" stroke="#6b4a1c" stroke-width="2.5"/><ellipse cx="16" cy="4" rx="16" ry="11" fill="#caa066" stroke="#6b4a1c" stroke-width="2.5"/>`,826,455,900,450,450,()=>{S.cut.st='cutting';drawBoard();
+  $('bkn').animate([{transform:'rotate(-25deg)'},{transform:'rotate(14deg)'}],{duration:230,iterations:6,direction:'alternate'}).onfinish=()=>{S.cut.st='ready';drawBoard();beep(600,.1);hint('🔪 Doğrandı! Tahtaya tıkla → fritöze at')}})}
+function boardClick(){if(!ok())return;if(S.cut.st!=='ready'){hint('Önce patates doğra (patates yığınına tıkla)');return}
+ if(S.fry.st!=='idle'){hint('Fritöz dolu');return}S.cut.st='none';drawBoard();seed=4;
+ fly(fries(0,0,6,20,0),902,452,892,335,500,()=>{S.fry={st:'cook',t:S.fryT,b:0};drawFry();beep(260,.2);hint('🍟 '+S.fryT+' sn kızarıyor...')})}
+function fryClick(){if(!ok())return;const f=S.fry;
+ if(f.st==='done'){f.st='idle';drawFry();seed=4;fly(fries(0,0,6,20,1),892,335,651,376,550,()=>{S.fries=Math.min(9,S.fries+6);drawTrays();beep(800,.1);fx('🍟 +6',620,350)})}
+ else if(f.st==='burn'){f.st='idle';drawFry();hint('Yanık patates çöpe!')}
+ else if(f.st==='cook')hint('Daha pişmedi...');else hint('Önce patates doğra, tahtadan fritöze at')}
+function pickDrink(k){if(!ok())return;if(S.drink||S.dbusy){hint('Elinde içecek var');return}S.dbusy=true;const sx=k==='cola'?722:770,tx=k==='cola'?725:771;
+ fly(cupG(k,0,0,1),sx,462,tx,372,500,()=>{let p=0;const g=$('dfill'),col=k==='cola'?'#3a1a10':'#ffa31a';const iv=setInterval(()=>{p+=.05;g.innerHTML=`<rect x="${tx-2}" y="322" width="4" height="${p<1?44:0}" fill="${col}"/>`+cupG(k,tx,372,1)+`<rect x="${tx+22}" y="${392-40*p}" width="6" height="${40*p}" fill="${col}" stroke="#222"/>`;
+  if(p>=1){clearInterval(iv);g.innerHTML='';beep(700,.1);fly(cupG(k,0,0,1),tx,372,668,462,450,()=>{S.drink=k;S.dbusy=false;drawDrink()})}},100);beep(200,.4)})}
+function clearDrink(){if(S.drink&&!S.pause){S.drink=null;drawDrink()}}
+function wrapIt(){if(!ok())return;const p=S.plate;if(!p||p.wrapped||p.busy){hint(p&&p.busy?'Malzeme yolda...':'Önce lavaşı hazırla');return}p.wrapped=true;beep(700,.1);
+ $('plate').innerHTML=`<g class="pop"><g transform="rotate(-6)"><rect x="10" y="-26" width="95" height="52" rx="24" fill="#efce92" stroke="#7a4a1c" stroke-width="4"/><path d="M96 0a14 14 0 1 0 -14 -10" stroke="#a46a2a" stroke-width="4" fill="none"/><rect x="-92" y="-30" width="122" height="60" rx="14" fill="#fff" stroke="#555" stroke-width="3"/><path d="M-70 -30l14 60M-40 -30l14 60M-10 -30l14 60" stroke="#e5383b" stroke-width="9"/><path d="M-55 -30l14 60M-25 -30l14 60" stroke="#2a8fd8" stroke-width="5"/><text x="-31" y="8" text-anchor="middle" style="font:bold 17px Arial;fill:#c1121f;stroke:#fff;stroke-width:3;paint-order:stroke">ŞAVURMA</text></g></g>`}
+function clearPlate(){const p=S.plate;if(p&&!p.wrapped&&!p.busy&&!S.pause){S.plate=null;$('plate').innerHTML='';hint('Çöpe attın')}}
+function serve(){const c=S.cust,p=S.plate;if(!c||S.pause)return;if(!p||!p.wrapped){hint('Önce paketle 📦');return}
+ const food=c.need.filter(k=>k!=='cola'&&k!=='fanta'),dr=c.need.find(k=>k==='cola'||k==='fanta')||null;
+ const good=[...p.items].sort().join()===[...food].sort().join()&&(S.drink||null)===dr;
+ S.plate=null;S.drink=null;$('plate').innerHTML='';drawDrink();
+ if(good){const pc=Math.round(c.pat),g=Math.round((5+Math.floor(pc/20)+(dr?3:0))*S.tip);S.coins+=g;S.dayServed++;fx('%'+pc,c.x-30,150,'#3be03b');fx('+'+g,780,80);beep(900,.12);setTimeout(()=>beep(1200,.12),90);S.cust=null;S.wait=1.2;drawCust();ui();if(S.dayServed>=S.goal)endDay();return}
+ c.pat=Math.max(1,c.pat-35);fx('YANLIŞ!',c.x-50,150,'#ff5050');beep(140,.3);drawCust();ui()}
+function newCust(){const need=['meat'];['mayo','pickle','fries','ketchup'].forEach(k=>{if(Math.random()<.5)need.push(k)});if(S.day>1&&Math.random()<.45)need.push(Math.random()<.5?'cola':'fanta');S.cust={x:520,v:Math.floor(Math.random()*3),need,pat:100};$('req').setAttribute('opacity','1');setTimeout(()=>$('req').setAttribute('opacity','0'),2200);drawCust()}
+function ui(){$('coinT').textContent=S.coins;$('lv').textContent='Gün '+S.day+' · '+S.dayServed+'/'+S.goal}
+function endDay(){S.pause=true;$('shT').textContent='🌟 GÜN '+S.day+' BİTTİ!';$('shC').textContent='🪙 '+S.coins+' coin — dükkândan geliştirme al';$('shop').style.display='flex'}
+function buy(k,c){if(S.coins<c){beep(140,.2);$('shC').textContent='Yetmedi! 🪙 '+S.coins;return}S.coins-=c;if(k==='pat')S.slow*=.8;if(k==='fry')S.fryT=Math.max(5,S.fryT-1);if(k==='tip')S.tip+=.3;beep(1000,.1);$('shC').textContent='Alındı ✔ — 🪙 '+S.coins;ui()}
+function nextDay(){S.day++;S.dayServed=0;S.goal=5+S.day*2;S.cust=null;S.plate=null;S.drink=null;S.wait=1.2;S.pause=false;$('shop').style.display='none';$('plate').innerHTML='';drawCust();drawDrink();ui()}
+function togglePause(){if($('shop').style.display==='flex')return;S.pause=!S.pause;$('pauseG').style.display=S.pause?'block':'none';$('pz').setAttribute('d',S.pause?'M-6 -10l16 10-16 10z':'M-7 -9v18M7 -9v18')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')togglePause()});
+setInterval(()=>{if(!ok())return;
+ const f=S.fry;if(f.st==='cook'){f.t-=.1;if(f.t<=0){f.st='done';f.b=6;beep(1000,.2)}drawFry()}else if(f.st==='done'){f.b-=.1;if(f.b<=0){f.st='burn';beep(150,.4);drawFry()}}
+ if(S.cust){S.cust.pat-=(.3+S.day*.05)*S.slow;if(S.cust.pat<=0){fx('😤 Gitti',480,150);beep(150,.4);S.cust=null;S.wait=1.5;drawCust()}else drawCust()}
+ else{S.wait-=.1;if(S.wait<=0)newCust()}},100);
+$('go').onclick=()=>{$('menu').style.display='none';S.on=true;beep(600,.1);build();ui()};
+build();
+</script></body></html>
